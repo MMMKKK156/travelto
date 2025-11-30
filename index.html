@@ -35,6 +35,8 @@
             height: 250px;
             background: radial-gradient(circle, rgba(255,255,255,0.18), transparent);
             border-radius: 50%;
+            z-index: 0;
+            pointer-events: none;
         }
         .header::after {
             content: '';
@@ -45,6 +47,8 @@
             height: 200px;
             background: radial-gradient(circle, rgba(255,255,255,0.12), transparent);
             border-radius: 50%;
+            z-index: 0;
+            pointer-events: none;
         }
         .header h1 { 
             font-size: 26px; 
@@ -424,7 +428,7 @@
                     <div class="weather-loading">⏳ 載入天氣資訊中...</div>
                 </div>
             </div>
-            <div v-if="editingHeader" style="padding: 0 5px;">
+            <div v-if="editingHeader" style="padding: 0 5px; position: relative; z-index: 10;">
                 <select v-model="tripTitle" style="font-size: 18px; font-weight: 500; letter-spacing: 1px; margin-bottom: 12px; text-align: center; text-align-last: center; cursor: pointer; width: 100%; padding: 16px; padding-right: 40px; border-radius: 8px; border: none; background: rgba(255,255,255,0.95); color: #4a6070; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20fill%3D%22%234a6070%22%20d%3D%22M4%206l4%204%204-4z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: center right 12px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; pointer-events: auto; position: relative; z-index: 10;">
                     <option value="">選擇旅遊城市</option>
                     <option value="東京">🇯🇵 東京 (日圓 JPY)</option>
@@ -460,35 +464,16 @@
                 <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px;">
                     <div>
                         <div style="font-size: 12px; opacity: 0.9; margin-bottom: 8px; color: white; text-align: left; font-weight: 500;">開始日期</div>
-                        <button v-on:click.stop="showDatePicker='start'" style="background: white; color: #333; border: none; border-radius: 10px; padding: 18px; font-size: 16px; width: 100%; cursor: pointer; text-align: center; box-sizing: border-box; font-weight: 600; min-height: 60px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                            <svg v-if="!startDate" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.5;"><path d="M9 18l6-6-6-6"/></svg>
-                            <span>{{ startDate || '點此選擇開始日期' }}</span>
-                        </button>
+                        <input v-model="startDate" type="date" style="background: white; color: #333; border: none; border-radius: 10px; padding: 18px; font-size: 16px; width: 100%; cursor: pointer; text-align: center; box-sizing: border-box; font-weight: 600; min-height: 60px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); position: relative; z-index: 15;">
                     </div>
                     <div>
                         <div style="font-size: 12px; opacity: 0.9; margin-bottom: 8px; color: white; text-align: left; font-weight: 500;">結束日期</div>
-                        <button v-on:click.stop="showDatePicker='end'" style="background: white; color: #333; border: none; border-radius: 10px; padding: 18px; font-size: 16px; width: 100%; cursor: pointer; text-align: center; box-sizing: border-box; font-weight: 600; min-height: 60px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                            <svg v-if="!endDate" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.5;"><path d="M9 18l6-6-6-6"/></svg>
-                            <span>{{ endDate || '點此選擇結束日期' }}</span>
-                        </button>
+                        <input v-model="endDate" type="date" style="background: white; color: #333; border: none; border-radius: 10px; padding: 18px; font-size: 16px; width: 100%; cursor: pointer; text-align: center; box-sizing: border-box; font-weight: 600; min-height: 60px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); position: relative; z-index: 15;">
                     </div>
                 </div>
-                <div style="display: flex; gap: 8px;">
-                    <button v-on:click="cancelHeaderEdit" type="button" style="flex: 1; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 14px; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 500; touch-action: manipulation; -webkit-tap-highlight-color: transparent; pointer-events: auto;">取消</button>
-                    <button v-on:click="saveHeaderEdit" type="button" style="flex: 1; background: rgba(255,255,255,0.95); border: none; color: #4a6070; padding: 14px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; pointer-events: auto;">確定</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 日期選擇器彈出視窗 -->
-        <div v-if="showDatePicker" v-on:click.stop="showDatePicker=''" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;">
-            <div v-on:click.stop style="background: white; border-radius: 12px; padding: 20px; max-width: 400px; width: 100%;">
-                <h3 style="margin: 0 0 15px 0; color: #4a6070; font-size: 18px;">{{ showDatePicker==='start'?'選擇開始日期':'選擇結束日期' }}</h3>
-                <input v-if="showDatePicker==='start'" v-model="startDate" type="date" style="width: 100%; padding: 12px; font-size: 16px; border: 2px solid #dce5ed; border-radius: 8px; box-sizing: border-box;">
-                <input v-if="showDatePicker==='end'" v-model="endDate" type="date" style="width: 100%; padding: 12px; font-size: 16px; border: 2px solid #dce5ed; border-radius: 8px; box-sizing: border-box;">
-                <div style="display: flex; gap: 10px; margin-top: 15px;">
-                    <button v-on:click.stop="showDatePicker=''" style="flex: 1; background: #dce5ed; color: #4a6070; border: none; padding: 12px; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 600;">取消</button>
-                    <button v-on:click.stop="showDatePicker=''" style="flex: 1; background: #7a9db8; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 600;">確定</button>
+                <div style="display: flex; gap: 8px; position: relative; z-index: 25;">
+                    <button v-on:click="cancelHeaderEdit" type="button" style="flex: 1; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 14px; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 500; touch-action: manipulation; -webkit-tap-highlight-color: transparent; pointer-events: auto; position: relative; z-index: 30; min-height: 48px;">取消</button>
+                    <button v-on:click="saveHeaderEdit" type="button" style="flex: 1; background: rgba(255,255,255,0.95); border: none; color: #4a6070; padding: 14px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; pointer-events: auto; position: relative; z-index: 30; min-height: 48px;">確定</button>
                 </div>
             </div>
         </div>
